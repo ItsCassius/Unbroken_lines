@@ -12,3 +12,7 @@ config_version=5
 
 config/name="Unbroken Lines"
 config/features=PackedStringArray("4.3", "Forward Plus")
+
+[autoload]
+
+RaceManager="*res://scripts/core/race_manager.gd"
