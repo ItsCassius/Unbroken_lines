@@ -16,7 +16,9 @@ them yet. Repo has:
   outright — chosen specifically so this can be open to contribution without
   risk of someone else monetizing it)
 - `project.godot` — minimal, targets Godot 4.3, registers the `RaceManager`
-  autoload. No scenes yet — see "Manual smoke-test setup" below.
+  autoload. No `.tscn` scenes yet — see "Smoke test — verified" below.
+- `tests/smoke/vertical_slice_smoke_test.gd` — headless integration smoke
+  test, builds its scene in code, confirmed passing (see below).
 - `scripts/core/` — the foundation, **not a claimable unit, owner-maintained**:
   - `race_manager.gd` — `RaceManager` autoload. Owns the
     `COUNTDOWN → RACING → FINISHED` state machine (§1) and the signals
@@ -61,29 +63,45 @@ possible at all.
 the vertical slice — single-player time-trial is the smaller slice to prove
 the feel on first.
 
-### Manual smoke-test setup
+### Smoke test — verified ✅
 
-No `.tscn` scene file exists yet — hand-authoring one without access to the
-Godot editor risks shipping something that silently fails to open, so this
-was left for whoever opens the project first. To verify the foundation
-actually works end to end, in the Godot 4.3 editor:
+`tests/smoke/vertical_slice_smoke_test.gd` builds the ground/car/checkpoint
+entirely in code (no `.tscn` needed) and drives the placeholder car
+straight ahead, asserting `RaceManager.race_finished` fires. **Run and
+passing as of 2026-08-30** on Godot 4.3, confirming the
+`RaceManager`/`Drivable`/`checkpoint.gd` seam genuinely works end to end
+before any real unit builds on top of it.
 
-1. New 3D scene, root `Node3D`.
-2. Add a `StaticBody3D` "Ground" with a large flat `BoxShape3D`
-   `CollisionShape3D` + matching `BoxMesh` `MeshInstance3D` child.
-3. Add a `RigidBody3D` "Car", attach `scripts/core/dev_smoke_test_car.gd`,
-   give it a `CollisionShape3D` (`BoxShape3D`) + `BoxMesh` `MeshInstance3D`,
-   positioned above the ground.
-4. Add a `Camera3D` as a child of Car, pulled back and slightly up, angled
-   down at it (temporary — no real follow-cam logic yet).
-5. Add an `Area3D` "Checkpoint" ahead of the car with a `CollisionShape3D`,
-   attach `scripts/core/checkpoint.gd`, check `is_finish_line`.
-6. Run the scene (F6). Arrow keys should move the car; driving through the
-   checkpoint should print no errors and (if you connect a debug print to
-   `RaceManager.race_finished`) confirm the signal fires. Call
-   `RaceManager.start_race()` from somewhere (e.g. the scene root's
-   `_ready()`) first, since checkpoints are ignored outside `RACING` state.
-7. Once confirmed working, save as `scenes/dev/smoke_test.tscn` and commit.
+Run it headless, no editor GUI or display required:
+
+```sh
+# One-time per fresh clone/engine version — builds the class_name cache
+# (.godot/ is gitignored, so this is needed again after every fresh clone):
+godot --headless --editor --quit-after 1
+
+# The actual smoke test:
+godot --headless --path . -s res://tests/smoke/vertical_slice_smoke_test.gd
+```
+
+Two non-obvious things this depends on, discovered getting it working on a
+headless server with no Godot previously installed:
+
+- A `-s` entrypoint script compiles *before* autoloads are registered as
+  global identifiers, so it can't reference `RaceManager` by bare name —
+  it fetches it via `get_root().get_node("RaceManager")` at runtime
+  instead. Any future headless/CLI-run script needs the same workaround;
+  scripts loaded normally at runtime (like `checkpoint.gd`) don't have this
+  problem and can reference `RaceManager` directly.
+- `class_name`-based types (`Drivable`) are invisible until the editor
+  import step above has run at least once — without it you get "Could not
+  find base class" errors that look like a real code bug but aren't.
+
+A manual, in-editor version of the same check (useful once there's
+something worth actually watching move) is: new 3D scene, a flat
+`StaticBody3D` ground, a `RigidBody3D` with `dev_smoke_test_car.gd`
+attached, an `Area3D` checkpoint with `checkpoint.gd` attached
+(`is_finish_line = true`), call `RaceManager.start_race()` on scene
+`_ready()`, then run with F6 — arrow keys should move the car.
 
 ## Publishing to VibeOasis (vibeoasis.io)
 
@@ -134,13 +152,11 @@ merged). Key mechanics, since they shape how this repo should be structured:
 
 ## Open work
 
-- [ ] Run the manual smoke-test setup above in the Godot editor and commit
-      the resulting `scenes/dev/smoke_test.tscn` — confirms the
-      RaceManager/Drivable/checkpoint seam actually works before any unit
-      builds on top of it.
+- [x] Verify the RaceManager/Drivable/checkpoint seam actually works —
+      done, see "Smoke test — verified" above.
 - [ ] Publish the 8 vertical-slice work units listed above (or start
-      claiming/building them directly) now that the foundation and
-      directory paths are real.
-- [ ] Write the actual VibeOasis pitch text once at least one unit has
-      landed — it should mirror this file's "Current state" and open
-      blockers.
+      claiming/building them directly) now that the foundation is real and
+      confirmed working.
+- [ ] Write the actual VibeOasis pitch text — it should mirror this file's
+      "Current state" and open blockers, and can now honestly say the
+      foundation is tested and working, not just present.
