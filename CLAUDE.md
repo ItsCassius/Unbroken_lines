@@ -150,13 +150,45 @@ merged). Key mechanics, since they shape how this repo should be structured:
   required to publish, but "worth doing" per VibeOasis's own guidance since
   it's what makes the project recognizable in the feed.
 
+### Pitch text (current draft — paste into the publish form)
+
+> **Title:** Unbroken Lines
+>
+> A Godot 4 racing game aiming for arcade realism in service of *felt*
+> speed — not sim-racing accuracy for its own sake. The core design bet:
+> most racing games undersell speed by being too clean and too forgiving
+> (oversized roads, uniform asphalt, a camera welded to the hood). This one
+> leans the other way — narrow, realistically-scaled roads, road surface
+> that actually varies (cracks, patches, curbs, gravel, water) and pulls at
+> the car like it would in real life, a camera modeled as a body in the car
+> rather than a rigid mount, chassis vibration and body roll driven by real
+> suspension simulation rather than faked. Full design notes in the repo's
+> `design_principles.md`.
+>
+> **State it's in:** foundation only, and it's *tested* — a `RaceManager`
+> state machine, a `Drivable` vehicle contract, and checkpoint wiring are
+> built and verified end-to-end via a headless smoke test (no gameplay
+> assumptions baked in, just confirmed the seams actually connect). Zero
+> real gameplay systems exist yet: no vehicle physics, no track, no camera
+> feel, no input handling, no HUD, no menus, no audio, no art.
+>
+> **What's stuck / open:** everything above is scoped into 8 independent,
+> non-overlapping work units (vehicle physics, track/level, camera feel,
+> input mapping, HUD/UI, menus, audio, car/track art) — see this repo's
+> `CLAUDE.md` for the full table of paths and what each one talks to.
+> They're genuinely parallel-claimable: each only touches its own files and
+> talks to the rest only through a documented signal/contract, not shared
+> internals. Pick one and go — vehicle physics and track/level are the two
+> with no dependencies on anything else being built first.
+>
+> **License:** PolyForm Noncommercial 1.0.0 — open to use, modify, and
+> contribute for any noncommercial purpose; commercial use isn't permitted.
+
 ## Open work
 
 - [x] Verify the RaceManager/Drivable/checkpoint seam actually works —
       done, see "Smoke test — verified" above.
-- [ ] Publish the 8 vertical-slice work units listed above (or start
-      claiming/building them directly) now that the foundation is real and
-      confirmed working.
-- [ ] Write the actual VibeOasis pitch text — it should mirror this file's
-      "Current state" and open blockers, and can now honestly say the
-      foundation is tested and working, not just present.
+- [ ] Publish on vibeoasis.io using the pitch draft above, then break the
+      project into the 8 work units on the project page so they're
+      actually claimable.
+- [x] Write the actual VibeOasis pitch text — done, see above.
