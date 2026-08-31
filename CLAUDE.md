@@ -188,7 +188,15 @@ merged). Key mechanics, since they shape how this repo should be structured:
 
 - [x] Verify the RaceManager/Drivable/checkpoint seam actually works —
       done, see "Smoke test — verified" above.
-- [ ] Publish on vibeoasis.io using the pitch draft above, then break the
-      project into the 8 work units on the project page so they're
-      actually claimable.
 - [x] Write the actual VibeOasis pitch text — done, see above.
+- [x] Published on vibeoasis.io (2026-08-31) with all 8 vertical-slice work
+      units live and claimable (vehicle physics, track/level, camera,
+      input, HUD, menus, audio, art). `scripts/ai_opponents/*.gd` and
+      `scripts/save/*.gd` intentionally not published yet.
+- [ ] Watch for claims and PRs against the published units — review scope
+      is "does the PR stay inside its declared paths and respect the
+      Drivable/RaceManager contract," not full design review, since each
+      unit's "done when" bar is already written down in its description.
+- [ ] Once a unit merges, mark it "merged" on VibeOasis (nothing there does
+      this automatically) and update "Current state" above to reflect
+      what's actually built, not just what's claimable.
