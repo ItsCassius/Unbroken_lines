@@ -51,7 +51,7 @@ possible at all.
 | Unit | Path | Talks to |
 |---|---|---|
 | Vehicle physics | `scripts/vehicle/*.gd` | extends `Drivable` only |
-| Track/level | `scripts/track/*.gd` + track scenes | calls `RaceManager.report_checkpoint`/`finish_race` via `checkpoint.gd`, emits `surface_changed` (§3) |
+| Track/level | `scripts/track/*.gd`, `scenes/tracks/*.tscn` | calls `RaceManager.report_checkpoint`/`finish_race` via `checkpoint.gd`, emits `surface_changed` (§3) |
 | Camera feel | `scripts/camera/*.gd` | reads a `Drivable`'s public transform/speed only |
 | Input mapping | `scripts/input/*.gd` | feeds a `Drivable.apply_input()`, nothing else |
 | HUD/UI | `scripts/ui/*.gd` | `RaceManager` signals only |
